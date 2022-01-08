@@ -1,0 +1,43 @@
+
+
+Teplating we use jinja {{it will be run at run time}}
+
+templeting cannot be useed every where you have to make sure your oprator support templeting 
+
+
+xcom:
+
+used to share data between to tasks
+when ever a task is running it becomes a task instance (ti). and with ti you can access details 
+
+limitation:
+
+data size is limited 
+sql lite 2gb
+mysl   somekb
+
+
+taskflow API:
+
+1. decoratore
+2. xcom arg
+
+1. decoratore:
+can be used above a python fuction to make a task. without instattiating pythoneoperator 
+
+@task.python
+@task.virtualenv
+@task_group
+
+2. xcom arg:
+c task need data from b, we can create these depandency from xcom it create these by  explisit.
+
+ xcom_pull() got an unexpected keyword argument 'task_id' its task_ids
+
+
+subdag operator is a sensor behind the seen in airflow 2.0 , so we can use poke_interval= to define apoke time or to avoid adead lock use mode="reschedule" 
+to cntrol concorency of task in sub dag donot define it in subdag opertor defne it in ech task 
+
+
+we also have taskgroup decoretorS
+ 

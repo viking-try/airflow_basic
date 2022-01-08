@@ -1,0 +1,51 @@
+[1]
+priority:
+
+higer the no higher the priority
+
+ad this variable in your task, max is 99 
+priority_weight=5
+
+priority and computed on pool level is pool in tasks id diff then task will run without priority.
+
+if you triger task manually then priority are not considerd  
+
+
+priority rule _ downstream priority of last task in total of all tasks, default ech task as priority based on upstream 
+ upstream       first task has highes 
+ absolute.
+
+
+priority_weight=99 is defaul variable of  bad so it is prioraties over all dags
+
+
+[2]
+depends on past:
+
+prevent a task from running if it didnot run successsfully  last time, you donot end up with error it just stay stuck thats why you must add timeout in dag
+if you run  task manually then it will be respected 
+
+
+task will tun only if are skipped last time or successsful
+
+
+@task.python(task_id="mytask", depends_on_past=True)
+
+[3]
+wait for downstream:
+a >>b >>c
+
+task a in second run will only get triggured if in privios dag run task a and its down stream task b ran succcesfully last time
+[4]
+#
+delay_task = DateTimeSensor(     
+#we are using time sensor
+    task_id='delay_task',
+    target_time="{{ execution_date.add(hours=9) }}", #required by time sensor
+    poke_interval=60 * 60, #1H
+    mode='reschedule',   #poke or reschedule, in poke it keep the pool slot. in reshedule it will drop the poll slot and use it after poke interval
+    timeout=60 * 60 * 10, #10 h default  7 days
+    execution_timeout=  # it will mark iit as fail
+    soft_fail=True, # it can be used with poke_interval, with soft fail it will mark task as skiped not faied  
+    exponential_backoff=True  #increase poke interval 
+)

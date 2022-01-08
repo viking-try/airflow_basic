@@ -1,0 +1,65 @@
+Retry:
+
+default value of retry in airflow in 0 
+
+you can set retry to any value you mark task will we marked failed when all rety are done.
+
+you can define retry at 3 level:
+
+airflow level
+dag
+task
+
+
+if retry is seet at both dag and task level then task level value will be used
+
+Airflow level:
+set below var
+default_task_retry
+
+Dag:
+
+you can add rety value in defaul argumnets:
+
+default_args = {
+"start_date": datetime(2021, 1, 1)
+"retries":3
+}
+
+tasks
+
+@task.python(task_id=task, reties=3) 
+
+
+retry delay:
+
+to avoid over loading db or an API:
+
+@task.python(task_id=task, reties=3, retry_delay=timedelta(minutes=5) )
+
+to increase time betwwen each retry:
+@task.python(task_id=task, reties=3, retry_delay=timedelta(minutes=5), retry_exponential_backoff=True )
+
+to make sure that retry_exponential_backoff does not go above a given time
+
+@task.python(task_id=task, reties=3, retry_delay=timedelta(minutes=5), retry_exponential_backoff=True, max_retry_delay=timedelta(minutes=15))
+
+SLA: 
+if you triggure your dag manually then your SLA is not counted
+
+it gives you an email if you tasks are running for loger lime then expected youca define an SLA in task.
+SLA is consderd for whole dag, eg if you add sla in last task then SLA will be considerd for starting of DAG. So configur SLA accordingly.
+we also have SLA miss callback. All tasks will have same call back.
+
+@dag(description="SlA", starttime=datetime(2021, 1, 1), schedule_interval="@daily", sla_miss_callback=_sla_callback_function)
+      
+def _sla_callback_function(dag, task_list, blocking_task_list, slas, blocking_tis):
+
+blocking_tis
+blocking_task_list
+above two are basically the same. t1 >> t2 if t1 ahd t2 both have sla and t2 missed his sla due to t1 then t1 considerd as blacking task. Thats when t1 is blocking_tis. 
+
+SLAs, task_list : they are also the same. SLA and have liast of task that mised sla annd task list has task intance object 
+
+
+

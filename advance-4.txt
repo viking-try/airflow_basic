@@ -1,0 +1,42 @@
+External task sensor:
+
+you can use this sensor to triger a dag based on another tasks in another dag
+
+
+[1]
+from airflow.sensors.external_task import ExternalTaskSensor
+
+
+waiting_for_task = ExternalTaskSensor(
+    task_id='waiting_for_task',
+    external_dag_id='external_dag_name',
+    external_task_id='task_id_in_external_dag_name',
+)
+
+ExternalTaskSensor will wait for task in ex dag to run on same exicution date. so make sure dag exicution dates are same
+
+what is ex dag does not have same exicution date and or schedule intervalthen use execution_delta
+
+waiting_for_task = ExternalTaskSensor(
+    task_id='waiting_for_task',
+    external_dag_id='external_dag_name',
+    external_task_id='task_id_in_external_dag_name',
+    execution_delta=timedelta() #time delta  object between sensor dag and ex dag
+    execution_date_fn=  #more complex then execution_delta it expects a funtion . you can pass exicution date in it or ti and other dag details
+    failed_states=['failed', 'skipped']  #if the taskk you are waiting for fails then this task will keep running for 7 days. so mention a state inwhich you want task to fail 
+    allowed_states=['suuccess']
+ )
+
+
+[2]
+TriggerDagRunOperator(     #it is used to run a dag from another dag unlike ExternalTaskSensor
+
+  task_id='triger_dag'
+  trigger_dag_id='external_dag_name'
+  execution_date='{{ ds }}'
+  wait_for_completion=True
+  poke_interval=60  #default val
+  reset_dag_run=True
+  failed_states=['failed']
+#you cannot use mode in TriggerDagRunOperator because its not a sensor
+)

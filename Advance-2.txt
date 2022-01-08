@@ -1,0 +1,35 @@
+time out:
+if we run task amually time out is not respected.
+
+timeout can be defined at both dag and task level
+
+
+react to fail of task:
+1. trigger rule
+2. call backs: call back is just a funtion that will be called when a funtion fails, or a funtion is retied then we have
+               call back for that too . 
+call backs can be deined at dag level and
+
+@dag(schedule_interval=timedelta(minutes=10), tags ...., on_success_callback=_success_call, on_failure_callback=_fail_call)
+
+on_success_callback is call back, callback expects a funtion. waht you want to do on success.
+
+Below is _success_call funtion 
+
+def _success_call(context): #context has infoantion like dag run time and other. 
+    print(context)
+
+def _fail_call(context): #context has information like dag run time and other. 
+    print(context)
+
+
+if you have a failier in call back then it will not be reties automatically 
+
+Call back at task level:
+
+you have on success and on fail and on retry  
+
+on_success_callback
+on_failure_callback
+on_retry_callback
+

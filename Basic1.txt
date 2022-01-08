@@ -1,0 +1,46 @@
+DAG:
+
+dag file should have word dag on airflow in it of schduler will not parse it 
+from airflow import DAG
+
+you can chnge it by chnging DAG_DISCOVERY_SAFE_MODE
+
+.airflowignore - you can add files  folders in in so sheduler will not parse it in dags folder
+
+
+each task can have its own start date
+
+strating dag  required parameters 
+with DAG(dag_id="1dag_dummy", description= "dummy dag", start_date=datetime(2021, 1, 1),
+         schedule_interval="@daily", dagrun_timeout=timedelta(minutes=10), tags=["dummy", "test"],
+         catchup=False ) as dag:
+    #you can remove dag_id and just write "1dag_dummy" because dag is by default first. 
+    #schedule_interval @daily @weekly or a cron */10 * * * * or a timme delta timedelta(minutes=5) 
+
+scheduling 101:
+
+start_date: date to start exicution of date
+schedule_interval = time between in each run 
+first run of dag will be start_date+schedule_interval 
+
+schedule_interval:
+start_date= 01/01 10:00 am
+
+timedelta: statefull, run dag based on last dag run time, usecase run dag every 3  day (cron will get confed while doing this)  
+timedelta(day=1)
+01/01 10 AM (but first effictive tirggred  will be 01/02 10 AM
+
+cron: 	state less
+
+@daily or  0 0 * * * 
+it will be trigured on 01/01 00:00 -> 01/02 00:00 - basically everyday midnight not at 10:00
+
+
+Your dags should have below properties:
+ 
+idempotence:
+if you dag multiple time it shuould have same side effects  
+
+daterminism:
+same output for same input
+ 

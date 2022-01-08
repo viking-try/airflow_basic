@@ -1,0 +1,46 @@
+braching:
+
+we can do baraching in airflow, based on day   
+
+we have batach pythone , sql operator
+
+Controlling task and dag concorency :
+
+eg: limiting that only one instance to a task or dag can run at a time
+
+using config file:
+PARALLECISM = 32 #default no of task that can be run at the same time for entire airflow  
+DAG_CONCURRENCY = 16 #no of task that can run at the same time for all dag run of dag
+MAX_ACTIVE_RUNS_PER_DAG= 16 # max dag run for a specific dag
+
+
+Controlling TASK and DAG run from dag:
+
+You cann controll this from dag instatition. Like below
+@dag(description="controlly dag and task concurrency" schedule_interval=@daily,
+      concurrency=2, max_active_run=1)
+#concurrency define no of task that can run for this dag in all dag runs	
+#max_active_run=1 no of max run for ths dag
+
+
+Controlling concorency from task
+
+start = DummyOperator(task_id='start', task_concurrency=1, pool='defaul_pool')
+#task_concurrency only one instace of this task can run 
+#if poll can only run one task at a time then only one task will run
+
+POOL:
+
+By default all task run in default_pool. you can run task in other pool by adding pool in task creation 
+example:
+start = DummyOperator(task_id='start', task_concurrency=1, pool='ML_pool')
+
+usecase: 3 task (high resource users) run same time and 3 other task (low resource) run in paraller after that. 
+high recource task you want to run one at time so will make pool with one space only so only one of parraller task will run
+for other tasks you can use defaul task so they can run at the same time.
+
+pool_slot=3 # task will take 3 slots from pool
+
+using pool for SubDagOperator:
+
+if you difine pool for subdag oprator it will not be respected by internal tasks of subdag  
